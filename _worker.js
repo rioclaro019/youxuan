@@ -48,6 +48,7 @@ let 加密方式 = 'auto';
 let 网站图标, 网站头像, 网站背景, xhttp = '';
 async function 整理优选列表(api,env) {
 	console.log("当前使用的端口变量:", env.originalport);
+	const 订阅端口 = env.originalport || '443';
 	if (!api || api.length === 0) return [];
 	let newapi = "";
 	const controller = new AbortController();
@@ -99,13 +100,15 @@ async function 整理优选列表(api,env) {
 						// 正则：捕获地址(IP/域名)，忽略中间可能存在的端口，捕获结尾备注
 						// 能够匹配：1.1.1.1 | 1.1.1.1:443 | 1.1.1.1#备注 | 1.1.1.1:443#备注
 						const match = trimLine.match(/^([^:#\s]+)(?::\d+)?(#.*)?$/);
+						const 自动标注 = !match[2] ? "[自动]" : "";
 						
 						if (match) {
 							const address = match[1];      // IP 或 域名
-							const comment = match[2] || ''; // #备注内容
-							
-							// 强制拼接为：地址:originalport#备注
-							newapi += `${address}:${测速端口}${comment}\n`;
+							// 优先级：1. 节点行自带端口 > 2. API链接里的port参数 > 3. 订阅链接默认端口(443)
+							let finalPort = match[2] || 测速端口 || 订阅端口;
+							const comment = match[3] || '';
+							// 拼接最终行
+							newapi += `${address}:${finalPort}${comment}${自动标注}\n`;
 						} else {
 							// 如果正则没匹配上，保底原样放入（通常不会走到这里）
 							newapi += trimLine + '\n';
