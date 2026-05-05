@@ -946,6 +946,10 @@ export default {
 		const userAgentHeader = request.headers.get('User-Agent');
 		const userAgent = userAgentHeader ? userAgentHeader.toLowerCase() : "null";
 		const url = new URL(request.url);
+
+		//从订阅链接获取端口
+		const defaultPort = url.searchParams.get('port') || "443"; // 获取 URL 里的 port 参数，没有则默认为 443
+		
 		const format = url.searchParams.get('format') ? url.searchParams.get('format').toLowerCase() : "null";
 		let host = "";
 		let uuid = "";
@@ -1329,7 +1333,8 @@ export default {
 						}
 					}
 				}
-				if (port == "-1") port = "443";
+				//if (port == "-1") port = "443";
+				if (port == "-1") port = defaultPort || "443";
 
 				//console.log(address, port, addressid);
 
