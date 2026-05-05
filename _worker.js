@@ -101,11 +101,13 @@ async function 整理优选列表(api,env) {
 						// 能够匹配：1.1.1.1 | 1.1.1.1:443 | 1.1.1.1#备注 | 1.1.1.1:443#备注
 						const match = trimLine.match(/^([^:#\s]+)(?::\d+)?(#.*)?$/);
 						const 自动标注 = !match[2] ? "[自动]" : "";
+						const url = new URL(request.url);
+						const 订阅链接端口 = url.port || (url.protocol === 'https:' ? '443' : '80');
 						
 						if (match) {
 							const address = match[1];      // IP 或 域名
-							// 优先级：1. 节点行自带端口 > 2. API链接里的port参数 > 3. 订阅链接默认端口(443)
-							let finalPort = match[2] || 测速端口 || 订阅端口;
+							/ 修改重点：如果 match[2] (行内端口) 不存在，则回退到 测速端口 或 订阅链接端口
+							let finalPort = match[2] || 订阅端口 || 测速端口;
 							const comment = match[3] || '';
 							// 拼接最终行
 							newapi += `${address}:${finalPort}${comment}${自动标注}\n`;
