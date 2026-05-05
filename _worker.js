@@ -106,7 +106,7 @@ async function 整理优选列表(api,env) {
 						
 						if (match) {
 							const address = match[1];      // IP 或 域名
-							/ 修改重点：如果 match[2] (行内端口) 不存在，则回退到 测速端口 或 订阅链接端口
+							// 修改重点：如果 match[2] (行内端口) 不存在，则回退到 测速端口 或 订阅链接端口
 							let finalPort = match[2] || 订阅端口 || 测速端口;
 							const comment = match[3] || '';
 							// 拼接最终行
