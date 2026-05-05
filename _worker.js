@@ -47,6 +47,7 @@ let 额外ID = '0';
 let 加密方式 = 'auto';
 let 网站图标, 网站头像, 网站背景, xhttp = '';
 async function 整理优选列表(api) {
+	console.log("当前使用的端口变量:", env.originalport);
 	if (!api || api.length === 0) return [];
 	let newapi = "";
 	const controller = new AbortController();
