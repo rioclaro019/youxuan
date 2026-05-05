@@ -46,7 +46,7 @@ let 网络备案 = `<a href='https://t.me/CMLiussss'>萌ICP备-20240707号</a>`;
 let 额外ID = '0';
 let 加密方式 = 'auto';
 let 网站图标, 网站头像, 网站背景, xhttp = '';
-async function 整理优选列表(api) {
+async function 整理优选列表(api,env) {
 	console.log("当前使用的端口变量:", env.originalport);
 	if (!api || api.length === 0) return [];
 	let newapi = "";
@@ -1188,13 +1188,13 @@ export default {
 				临时中转域名 = [...new Set(临时中转域名)];
 			}
 
-			const newAddressesapi = await 整理优选列表(addressesapi);
+			const newAddressesapi = await 整理优选列表(addressesapi,env);
 			const newAddressescsv = await 整理测速结果('TRUE');
 			const uniqueAddresses = Array.from(new Set(addresses.concat(newAddressesapi, newAddressescsv).filter(item => item && item.trim())));
 
 			let notlsresponseBody;
 			if ((noTLS == 'true' && 协议类型 == atob(`\u0056\u006b\u0078\u0046\u0055\u0031\u004d\u003d`)) || 协议类型 == 'VMess') {
-				const newAddressesnotlsapi = await 整理优选列表(addressesnotlsapi);
+				const newAddressesnotlsapi = await 整理优选列表(addressesnotlsapi,env);
 				const newAddressesnotlscsv = await 整理测速结果('FALSE');
 				const uniqueAddressesnotls = Array.from(new Set(addressesnotls.concat(newAddressesnotlsapi, newAddressesnotlscsv).filter(item => item && item.trim())));
 
@@ -1287,6 +1287,7 @@ export default {
 			const responseBody = uniqueAddresses.map(address => {
 				let port = env.originalport || "-1";
 				let addressid = address;
+				let content = "";
 
 				const match = addressid.match(regex);
 				if (!match) {
@@ -1323,7 +1324,7 @@ export default {
 						}
 					}
 				}
-				if (port == "-1") port = "443";
+				if (port == "-1" || !port) port = "443";
 
 				//console.log(address, port, addressid);
 
