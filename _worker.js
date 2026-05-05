@@ -68,18 +68,16 @@ async function 整理优选列表(api) {
 			if (response.status === 'fulfilled') {
 				const content = await response.value;
 				
-				// 确定最终要使用的端口
-				// 优先级：originalport 变量 > URL 参数 port= > 默认 443
+				// 优先级：环境变量 originalport > URL参数 port > 默认 443
 				let 测速端口 = env.originalport || '443';
 				if (!env.originalport) {
 					const portMatch = api[index].match(/port=([^&]*)/);
 					if (portMatch) 测速端口 = portMatch[1];
 				}
 
-				// 处理内容
 				const lines = content.split(/\r?\n/);
 				
-				// 如果是类似 CSV 格式的测速结果 (带多个逗号)
+				// 1. 处理 CSV 格式 (带多个逗号的测速结果)
 				if (lines[0].split(',').length > 3) {
 					let 节点备注 = '';
 					const idMatch = api[index].match(/id=([^&]*)/);
@@ -92,25 +90,26 @@ async function 整理优选列表(api) {
 						}
 					}
 				} else {
-					// --- 核心逻辑修改：处理带端口的列表 ---
-					// 这里处理类似 1.1.1.1:8443#备注 或纯 IP 的情况
-					const formattedContent = lines.map(line => {
-						const trimLine = line.trim();
-						if (!trimLine) return "";
+					// 2. 处理你提到的这类 IP 列表 (173.245.59.211#CF优选-电信)
+					for (let line of lines) {
+						let trimLine = line.trim();
+						if (!trimLine) continue;
+
+						// 正则：捕获地址(IP/域名)，忽略中间可能存在的端口，捕获结尾备注
+						// 能够匹配：1.1.1.1 | 1.1.1.1:443 | 1.1.1.1#备注 | 1.1.1.1:443#备注
+						const match = trimLine.match(/^([^:#\s]+)(?::\d+)?(#.*)?$/);
 						
-						// 正则匹配：提取 IP/域名、原始端口（如果有）、备注（如果有）
-						// 格式：地址[:端口][#备注]
-						const parts = trimLine.match(/^([^:#]+)(?::(\d+))?(.*)$/);
-						if (parts) {
-							const address = parts[1];
-							const comment = parts[3]; // 包含 # 及其后面的内容
-							// 强制改写端口为 测速端口
-							return `${address}:${测速端口}${comment}`;
+						if (match) {
+							const address = match[1];      // IP 或 域名
+							const comment = match[2] || ''; // #备注内容
+							
+							// 强制拼接为：地址:originalport#备注
+							newapi += `${address}:${测速端口}${comment}\n`;
+						} else {
+							// 如果正则没匹配上，保底原样放入（通常不会走到这里）
+							newapi += trimLine + '\n';
 						}
-						return trimLine;
-					}).filter(Boolean).join('\n');
-					
-					newapi += formattedContent + '\n';
+					}
 				}
 			}
 		}
@@ -120,7 +119,6 @@ async function 整理优选列表(api) {
 		clearTimeout(timeout);
 	}
 	
-	// 最后通过原有的整理函数进行格式化去重
 	const newAddressesapi = await 整理(newapi);
 	return newAddressesapi;
 }
