@@ -947,8 +947,8 @@ export default {
 		const userAgent = userAgentHeader ? userAgentHeader.toLowerCase() : "null";
 		const url = new URL(request.url);
 
-		//从订阅链接获取端口
-		const defaultPort = url.searchParams.get('port') || "443"; // 获取 URL 里的 port 参数，没有则默认为 443
+		//从订阅链接获取端口,可以用：2083，或者&port=2083
+		const defaultPort = url.port || url.searchParams.get('port') || "443"; // 获取 URL 里的 port 参数，没有则默认为 443
 		
 		const format = url.searchParams.get('format') ? url.searchParams.get('format').toLowerCase() : "null";
 		let host = "";
