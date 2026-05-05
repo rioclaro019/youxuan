@@ -1284,7 +1284,7 @@ export default {
 			}
 
 			const responseBody = uniqueAddresses.map(address => {
-				let port = "-1";
+				let port = env.originalport || "-1";
 				let addressid = address;
 
 				const match = addressid.match(regex);
