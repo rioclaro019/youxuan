@@ -339,13 +339,16 @@ async function MD5MD5(text) {
 }
 
 function revertFakeInfo(content, userID, hostName) {
-	content = content.replace(new RegExp(fakeUserID, 'g'), userID).replace(new RegExp(fakeHostName, 'g'), hostName);
-	return content;
+const safeUserID = (userID || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const safeHostName = (hostName || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+content = content.replace(new RegExp(fakeUserID, 'g'), userID).replace(new RegExp(fakeHostName, 'g'), hostName);
+return content;
 }
-
 function generateFakeInfo(content, userID, hostName) {
-	content = content.replace(new RegExp(userID, 'g'), fakeUserID).replace(new RegExp(hostName, 'g'), fakeHostName);
-	return content;
+const safeUserID = (userID || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const safeHostName = (hostName || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+content = content.replace(new RegExp(safeUserID, 'g'), fakeUserID).replace(new RegExp(safeHostName, 'g'), fakeHostName);
+return content;
 }
 
 function isValidIPv4(address) {
