@@ -1303,7 +1303,9 @@ export default {
 						const vmessLink = `vmess://${utf8ToBase64(`{"v":"2","ps":"${addressid + EndPS}","add":"${address}","port":"${port}","id":"${uuid}","aid":"${额外ID}","scy":"${加密方式}","net":"ws","type":"${type}","host":"${host}","path":"${path}","tls":"","sni":"","alpn":"${encodeURIComponent(alpn)}","fp":""}`)}`;
 						return vmessLink;
 					} else {
-						const 为烈士Link = `${atob(atob('ZG14bGMzTTZMeTg9')) + (uuid || password)}@${address}:${port}?security=&type=${type}&host=${host}&path=${encodeURIComponent(path)}&encryption=none${extraQuery}#${encodeURIComponent(addressid + EndPS)}`;
+						const 协议前缀 = 协议类型 == 'Trojan' ? 'trojan://' : atob('ZG14bGMzTTZMeTg9') + uuid;
+						const 为烈士Link = `${协议前缀}@${address}:${port}?security=&type=${type}&host=${host}&path=${encodeURIComponent(path)}&encryption=none${extraQuery}#${encodeURIComponent(addressid + EndPS)}`;
+						//const 为烈士Link = `${atob(atob('ZG14bGMzTTZMeTg9')) + (uuid || password)}@${address}:${port}?security=&type=${type}&host=${host}&path=${encodeURIComponent(path)}&encryption=none${extraQuery}#${encodeURIComponent(addressid + EndPS)}`;
 						return 为烈士Link;
 					}
 
@@ -1403,13 +1405,14 @@ export default {
 					const vmessLink = `vmess://${utf8ToBase64(`{"v":"2","ps":"${addressid + 节点备注}","add":"${address}","port":"${port}","id":"${uuid}","aid":"${额外ID}","scy":"${加密方式}","net":"ws","type":"${type}","host":"${伪装域名}","path":"${最终路径}","tls":"tls","sni":"${sni}","alpn":"${encodeURIComponent(alpn)}","fp":"","allowInsecure":"${scv == 'true' ? '1' : '0'}","fragment":"1,40-60,30-50,tlshello"}`)}`;
 					return vmessLink;
 				} else if (协议类型 == atob('VHJvamFu')) {
-					const 特洛伊Link = `${atob(atob('ZEhKdmFtRnVPaTh2')) + (uuid || password)}@${address}:${port}?security=tls&sni=${sni}&alpn=${encodeURIComponent(alpn)}&fp=random&type=${type}&host=${伪装域名}&path=${encodeURIComponent(最终路径) + (scv == 'true' ? '&allowInsecure=1' : '')}&fragment=${encodeURIComponent('1,40-60,30-50,tlshello')}#${encodeURIComponent(addressid + 节点备注)}`;
+					// Trojan 节点：直接在末尾拼上 & 加小尾巴
+					const 特洛伊Link = `${atob(atob('ZEhKdmFtRnVPaTh2')) + (uuid || password)}@${address}:${port}?security=tls&sni=${sni}&alpn=${encodeURIComponent(alpn)}&fp=random&type=${type}&host=${伪装域名}&path=${encodeURIComponent(最终路径) + (scv == 'true' ? '&allowInsecure=1' : '')}&fragment=${encodeURIComponent('1,40-60,30-50,tlshello')}&${extraQuery}#${encodeURIComponent(addressid + 节点备注)}`;
 					return 特洛伊Link;
 				} else {
-					const 为烈士Link = `${atob(atob('ZG14bGMzTTZMeTg9')) + (uuid || password)}@${address}:${port}?security=tls&sni=${sni}&alpn=${encodeURIComponent(alpn)}&fp=random&type=${type}&host=${伪装域名}&path=${encodeURIComponent(最终路径) + xhttp + (scv == 'true' ? '&allowInsecure=1' : '')}&fragment=${encodeURIComponent('1,40-60,30-50,tlshello')}&encryption=none${extraQuery}#${encodeURIComponent(addressid + 节点备注)}`;
+					// VLESS 节点：保留原本的 &encryption=none，并在后面拼上 & 加小尾巴
+					const 为烈士Link = `${atob(atob('ZG14bGMzTTZMeTg9')) + (uuid || password)}@${address}:${port}?security=tls&sni=${sni}&alpn=${encodeURIComponent(alpn)}&fp=random&type=${type}&host=${伪装域名}&path=${encodeURIComponent(最终路径) + xhttp + (scv == 'true' ? '&allowInsecure=1' : '')}&fragment=${encodeURIComponent('1,40-60,30-50,tlshello')}&encryption=none&${extraQuery}#${encodeURIComponent(addressid + 节点备注)}`;
 					return 为烈士Link;
 				}
-
 			}).join('\n');
 
 			let combinedContent = responseBody; // 合并内容
