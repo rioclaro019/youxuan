@@ -1405,12 +1405,12 @@ export default {
 					const vmessLink = `vmess://${utf8ToBase64(`{"v":"2","ps":"${addressid + 节点备注}","add":"${address}","port":"${port}","id":"${uuid}","aid":"${额外ID}","scy":"${加密方式}","net":"ws","type":"${type}","host":"${伪装域名}","path":"${最终路径}","tls":"tls","sni":"${sni}","alpn":"${encodeURIComponent(alpn)}","fp":"","allowInsecure":"${scv == 'true' ? '1' : '0'}","fragment":"1,40-60,30-50,tlshello"}`)}`;
 					return vmessLink;
 				} else if (协议类型 == atob('VHJvamFu')) {
-					// Trojan 节点：直接在末尾拼上 & 加小尾巴
-					const 特洛伊Link = `${atob(atob('ZEhKdmFtRnVPaTh2')) + (uuid || password)}@${address}:${port}?security=tls&sni=${sni}&alpn=${encodeURIComponent(alpn)}&fp=random&type=${type}&host=${伪装域名}&path=${encodeURIComponent(最终路径) + (scv == 'true' ? '&allowInsecure=1' : '')}&fragment=${encodeURIComponent('1,40-60,30-50,tlshello')}&${extraQuery}#${encodeURIComponent(addressid + 节点备注)}`;
+					// 【注意这里】：特洛伊Link 加上了 ${extraQuery}，并且去掉了前面死板的 & 符号，完全由 extraQuery 的逻辑自己带 & 
+					const 特洛伊Link = `${atob(atob('ZEhKdmFtRnVPaTh2')) + (uuid || password)}@${address}:${port}?security=tls&sni=${sni}&alpn=${encodeURIComponent(alpn)}&fp=random&type=${type}&host=${伪装域名}&path=${encodeURIComponent(最终路径) + (scv == 'true' ? '&allowInsecure=1' : '')}&fragment=${encodeURIComponent('1,40-60,30-50,tlshello')}${extraQuery}#${encodeURIComponent(addressid + 节点备注)}`;
 					return 特洛伊Link;
 				} else {
-					// VLESS 节点：保留原本的 &encryption=none，并在后面拼上 & 加小尾巴
-					const 为烈士Link = `${atob(atob('ZG14bGMzTTZMeTg9')) + (uuid || password)}@${address}:${port}?security=tls&sni=${sni}&alpn=${encodeURIComponent(alpn)}&fp=random&type=${type}&host=${伪装域名}&path=${encodeURIComponent(最终路径) + xhttp + (scv == 'true' ? '&allowInsecure=1' : '')}&fragment=${encodeURIComponent('1,40-60,30-50,tlshello')}&encryption=none&${extraQuery}#${encodeURIComponent(addressid + 节点备注)}`;
+					// 【注意这里】：为烈士Link 也同步去掉了 ${extraQuery} 前面硬编码的 & 符号，保证 VLESS 的兼容性
+					const 为烈士Link = `${atob(atob('ZG14bGMzTTZMeTg9')) + (uuid || password)}@${address}:${port}?security=tls&sni=${sni}&alpn=${encodeURIComponent(alpn)}&fp=random&type=${type}&host=${伪装域名}&path=${encodeURIComponent(最终路径) + xhttp + (scv == 'true' ? '&allowInsecure=1' : '')}&fragment=${encodeURIComponent('1,40-60,30-50,tlshello')}&encryption=none${extraQuery}#${encodeURIComponent(addressid + 节点备注)}`;
 					return 为烈士Link;
 				}
 			}).join('\n');
